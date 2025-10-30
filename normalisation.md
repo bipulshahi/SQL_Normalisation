@@ -33,6 +33,7 @@ When all data is stored in a single table, several critical problems emerge:
 **Example**: If advisor information depends only on the course (not on the student-course combination), create a separate Courses table.[1]
 
 ### Third Normal Form (3NF): "Eliminate Transitive Dependencies"
+
 **Rule**: Remove transitive dependencies where one non-key attribute depends on another non-key attribute.
 
 **Requirements**:
