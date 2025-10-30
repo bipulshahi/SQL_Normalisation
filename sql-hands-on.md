@@ -1,6 +1,6 @@
 # Complete SQL Hands-On Practice: Database Normalization
 
-## 🎯 Exercise 1: Social Media App
+## Exercise 1: Social Media App
 
 ### Scenario
 Build a social media app where users post content with tags, and users have different subscription plans.
@@ -170,7 +170,7 @@ ORDER BY TotalLikes DESC;
 
 ---
 
-## 🛍️ Exercise 2: E-Commerce Store
+## Exercise 2: E-Commerce Store
 
 ### Scenario
 Online store with customers, products, orders, and shipping methods.
