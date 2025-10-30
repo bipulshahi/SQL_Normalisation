@@ -45,7 +45,8 @@ When all data is stored in a single table, several critical problems emerge:
 ## Hands-On Example: Gaming Club Database
 Let's work through a complete normalization example using a gaming club database:
 
-### Starting Point: Unnormalized Table (0NF)```
+### Starting Point: Unnormalized Table (0NF)
+```
 PlayerID | PlayerName | Games           | MembershipType | MembershipFee
 1        | Alice      | Minecraft, FIFA | Premium        | 50
 2        | Bob        | Fortnite        | Basic          | 25
