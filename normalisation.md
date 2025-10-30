@@ -42,7 +42,8 @@ When all data is stored in a single table, several critical problems emerge:
 
 **Example**: If course advisor depends on advisor ID rather than directly on course ID, separate the advisor information into its own table.
 
-## Hands-On Example: Gaming Club DatabaseLet's work through a complete normalization example using a gaming club database:
+## Hands-On Example: Gaming Club Database
+Let's work through a complete normalization example using a gaming club database:
 
 ### Starting Point: Unnormalized Table (0NF)```
 PlayerID | PlayerName | Games           | MembershipType | MembershipFee
