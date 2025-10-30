@@ -352,7 +352,7 @@ ORDER BY TotalRevenue DESC;
 
 ---
 
-## 🎯 Practice Exercises
+## Practice Exercises
 
 ### Exercise 1: Add New Data
 ```sql
@@ -401,7 +401,7 @@ HAVING COUNT(DISTINCT cat.CategoryID) > 1;
 
 ---
 
-## 🏆 Advanced Challenges
+## Advanced Challenges
 
 ### Challenge 1: Add Discounts
 ```sql
@@ -455,7 +455,7 @@ SELECT * FROM customer_order_summary WHERE TotalOrders > 1;
 
 ---
 
-## 📚 More Practice Scenarios
+## More Practice Scenarios
 
 Try normalizing these on your own:
 
@@ -477,7 +477,7 @@ Try normalizing these on your own:
 
 ---
 
-## 💡 Tips for Practice
+## Tips for Practice
 
 1. **Start Simple**: Begin with unnormalized data
 2. **Identify Problems**: Look for redundancy and anomalies
@@ -489,7 +489,7 @@ Try normalizing these on your own:
 
 ---
 
-## 🎓 Key Takeaways
+## Key Takeaways
 
 - **Normalization eliminates redundancy** and improves data integrity
 - **1NF**: Atomic values only
