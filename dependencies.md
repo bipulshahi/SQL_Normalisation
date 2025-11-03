@@ -1,8 +1,3 @@
-Perfect question 👏 — this is key to understanding **2NF vs 3NF**.
-Let’s break it down slowly with **very simple examples**, so you’ll never forget the difference.
-
----
-
 ## Partial Dependency
 
 ### Definition:
@@ -104,7 +99,3 @@ Now, all non-key columns depend directly on their own table’s primary key → 
 | **What happens** | Non-key depends on part of the key                                | Non-key depends on another non-key                             |
 | **Example**      | `ProductName` depends only on `ProductID` (part of composite key) | `DepartmentName` depends on `DepartmentID`, not on `StudentID` |
 | **Fix**          | Separate into tables so non-keys depend on full key (→ 2NF)       | Separate into tables so non-keys depend only on key (→ 3NF)    |
-
----
-
-Would you like me to give you **a short visual diagram** (arrows showing dependencies) for these two examples? It helps see the difference instantly.
