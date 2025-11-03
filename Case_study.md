@@ -1,5 +1,7 @@
 # Database Normalization — Case Study
 
+**Target students:** Intro to Databases / DBMS (beginner)
+
 **Learning objectives**
 
 * Understand the concepts of 1NF, 2NF, and 3NF
@@ -11,240 +13,220 @@
 
 ## Problem statement (base data — unnormalized)
 
-You are given a single unnormalized table `posts_unnormalized` that stores social media posts, user details, plan pricing, tags (multiple in one cell), and likes.
+You are given an unnormalized table `flight_bookings_unnormalized` that stores flight booking details, passenger information, seat details, and multiple destinations in one cell.
 
 ```sql
-CREATE TABLE posts_unnormalized (
-    PostID INT,
-    Username VARCHAR(50),
-    UserEmail VARCHAR(100),
-    UserPlan VARCHAR(20),
-    PlanPrice DECIMAL(10,2),
-    PostContent TEXT,
-    Tags VARCHAR(200),  -- Multiple values in one cell!
-    LikeCount INT
+CREATE TABLE flight_bookings_unnormalized (
+    BookingID INT,
+    PassengerName VARCHAR(50),
+    PassengerEmail VARCHAR(100),
+    FlightNumber VARCHAR(20),
+    SeatNumber VARCHAR(10),
+    TicketType VARCHAR(20),
+    Price DECIMAL(10,2),
+    Destinations VARCHAR(200),  -- Multiple destinations in one cell!
+    MealPreference VARCHAR(50)
 );
 
-INSERT INTO posts_unnormalized VALUES
-(1, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Beautiful sunset!', 'nature,sunset,photography', 150),
-(2, 'bob_builder', 'bob@email.com', 'Free', 0.00,
- 'New project completed', 'work,project', 45),
-(3, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Morning coffee', 'coffee,morning,lifestyle', 89);
+INSERT INTO flight_bookings_unnormalized VALUES
+(1, 'Alice Johnson', 'alice@email.com', 'AI202', '12A', 'Economy', 320.00, 'Delhi,Paris,London', 'Vegetarian'),
+(2, 'Bob Smith', 'bob@email.com', 'AI305', '15B', 'Business', 980.00, 'New York,Chicago', 'Non-Veg'),
+(3, 'Alice Johnson', 'alice@email.com', 'AI408', '9C', 'Economy', 250.00, 'Mumbai,Dubai', 'Vegetarian');
 ```
 
 ---
 
 ## Assignment tasks (for students)
 
-1. **Explain in one sentence** why the `Tags` column violates 1NF.
-2. **Convert the table into 1NF**: write `CREATE TABLE posts_1nf` and `INSERT` statements that make `Tag` atomic (one tag per row). Use `PostID` and `Tag` to identify each row uniquely.
-3. **Identify the primary key** of your `posts_1nf` table and explain if any partial dependencies exist.
+1. **Explain in one sentence** why the `Destinations` column violates 1NF.
+2. **Convert the table into 1NF**: write `CREATE TABLE flight_bookings_1nf` and `INSERT` statements that make `Destination` atomic (one destination per row).
+3. **Identify the primary key** of your `flight_bookings_1nf` table and explain if any partial dependencies exist.
 4. **Convert to 2NF**: Show how to split data to remove partial dependencies. Provide `CREATE TABLE` and `INSERT` statements for the tables you design. Explain why your decomposition removes partial dependencies.
 5. **Convert to 3NF**: Identify any transitive dependencies in the 2NF design. Decompose into 3NF tables with `CREATE TABLE` and `INSERT` statements. Explain why the final design is in 3NF.
 6. **Write two sample queries** on the 3NF schema:
 
-   * a) Find all tags for `PostID = 1`.
-   * b) Find the plan name and price for the user who wrote `PostID = 3`.
+   * a) Find all destinations for `BookingID = 1`.
+   * b) Find ticket type and price for the passenger who has seat `9C`.
 
 ---
 
 ## Hints (for students)
 
-* 1NF requires *atomic* values: split comma-separated tags into separate rows.
-* In 1NF the key may become composite (for example `(PostID, Tag)`). If so, check whether any non-key attribute depends on part of that composite key — that indicates a **partial dependency**.
+* 1NF requires *atomic* values: split comma-separated destinations into separate rows.
+* In 1NF, if the key is composite (for example `(BookingID, Destination)`), check whether any non-key attribute depends only on part of that key — that indicates a **partial dependency**.
 * 2NF: move attributes that depend only on part of the composite key into their own table(s).
-* 3NF: check that non-key attributes do not depend on other non-key attributes (transitive dependency). If they do, separate them.
+* 3NF: ensure that non-key attributes do not depend on other non-key attributes (transitive dependency). If they do, separate them.
 
 ---
 
 ## Step-by-step solution (answer key)
 
-> **Note to instructors:** below is a stepwise solution you can provide or show after students attempt the exercise.
+> **Note to instructors:** below is a stepwise solution you can show after students attempt the exercise.
 
-### 1) Why `Tags` violates 1NF (model answer)
+### 1) Why `Destinations` violates 1NF
 
-* Because `Tags` contains multiple comma-separated tag values in a single cell (non-atomic). 1NF requires each field to hold an indivisible value.
+* Because `Destinations` contains multiple location names in one cell (non-atomic). 1NF requires every field to have a single, indivisible value.
 
 ---
 
 ### 2) Convert to **1NF** — SQL and explanation
 
-**Design choice:** keep all post and user fields but ensure `Tag` is atomic (one tag per row). Table name: `posts_1nf`.
+**Design choice:** keep all booking and passenger fields but ensure `Destination` is atomic. Table name: `flight_bookings_1nf`.
 
 ```sql
-CREATE TABLE posts_1nf (
-    PostID INT,
-    Username VARCHAR(50),
-    UserEmail VARCHAR(100),
-    UserPlan VARCHAR(20),
-    PlanPrice DECIMAL(10,2),
-    PostContent TEXT,
-    Tag VARCHAR(50),   -- atomic
-    LikeCount INT
+CREATE TABLE flight_bookings_1nf (
+    BookingID INT,
+    PassengerName VARCHAR(50),
+    PassengerEmail VARCHAR(100),
+    FlightNumber VARCHAR(20),
+    SeatNumber VARCHAR(10),
+    TicketType VARCHAR(20),
+    Price DECIMAL(10,2),
+    Destination VARCHAR(50),
+    MealPreference VARCHAR(50)
 );
 
-INSERT INTO posts_1nf VALUES
-(1, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Beautiful sunset!', 'nature', 150),
-(1, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Beautiful sunset!', 'sunset', 150),
-(1, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Beautiful sunset!', 'photography', 150),
-(2, 'bob_builder', 'bob@email.com', 'Free', 0.00,
- 'New project completed', 'work', 45),
-(2, 'bob_builder', 'bob@email.com', 'Free', 0.00,
- 'New project completed', 'project', 45),
-(3, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Morning coffee', 'coffee', 89),
-(3, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Morning coffee', 'morning', 89),
-(3, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Morning coffee', 'lifestyle', 89);
+INSERT INTO flight_bookings_1nf VALUES
+(1, 'Alice Johnson', 'alice@email.com', 'AI202', '12A', 'Economy', 320.00, 'Delhi', 'Vegetarian'),
+(1, 'Alice Johnson', 'alice@email.com', 'AI202', '12A', 'Economy', 320.00, 'Paris', 'Vegetarian'),
+(1, 'Alice Johnson', 'alice@email.com', 'AI202', '12A', 'Economy', 320.00, 'London', 'Vegetarian'),
+(2, 'Bob Smith', 'bob@email.com', 'AI305', '15B', 'Business', 980.00, 'New York', 'Non-Veg'),
+(2, 'Bob Smith', 'bob@email.com', 'AI305', '15B', 'Business', 980.00, 'Chicago', 'Non-Veg'),
+(3, 'Alice Johnson', 'alice@email.com', 'AI408', '9C', 'Economy', 250.00, 'Mumbai', 'Vegetarian'),
+(3, 'Alice Johnson', 'alice@email.com', 'AI408', '9C', 'Economy', 250.00, 'Dubai', 'Vegetarian');
 ```
 
-**Key point:** `Tag` is atomic. However, `Username` and plan fields repeat across multiple rows for the same `PostID` — that's acceptable in 1NF but signals further normalization is needed.
+**Key point:** `Destination` is now atomic. However, passenger and ticket information repeat — further normalization is needed.
 
 ---
 
-### 3) Primary key of `posts_1nf` and partial dependency check
+### 3) Primary key and partial dependency
 
-* **Primary key candidate:** `(PostID, Tag)` — together they uniquely identify each row.
-* **Partial dependency:** columns like `Username`, `UserEmail`, `UserPlan`, `PlanPrice`, `PostContent`, `LikeCount` depend only on `PostID` (part of the composite key). Hence partial dependencies exist and we must move those attributes into a table keyed by `PostID`.
-
----
-
-### 4) Convert to **2NF** — SQL and explanation
-
-**Design choice:** separate post-level details from tags. Table names: `posts_2nf` and `post_tags_2nf`.
-
-```sql
-CREATE TABLE posts_2nf (
-    PostID INT PRIMARY KEY,
-    Username VARCHAR(50),
-    UserEmail VARCHAR(100),
-    UserPlan VARCHAR(20),
-    PlanPrice DECIMAL(10,2),
-    PostContent TEXT,
-    LikeCount INT
-);
-
-INSERT INTO posts_2nf VALUES
-(1, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Beautiful sunset!', 150),
-(2, 'bob_builder', 'bob@email.com', 'Free', 0.00,
- 'New project completed', 45),
-(3, 'alice_wonder', 'alice@email.com', 'Premium', 9.99,
- 'Morning coffee', 89);
-
-CREATE TABLE post_tags_2nf (
-    PostID INT,
-    Tag VARCHAR(50),
-    FOREIGN KEY (PostID) REFERENCES posts_2nf(PostID)
-);
-
-INSERT INTO post_tags_2nf VALUES
-(1, 'nature'),(1, 'sunset'),(1, 'photography'),
-(2, 'work'),(2, 'project'),
-(3, 'coffee'),(3, 'morning'),(3, 'lifestyle');
-```
-
-**Why this removes partial dependencies:** `posts_2nf` stores attributes that depend only on `PostID` (no attribute in `posts_2nf` depends on `Tag`). `post_tags_2nf` stores the many-to-many relationship between posts and tags.
+* **Primary key candidate:** `(BookingID, Destination)`.
+* **Partial dependency:** Attributes like `PassengerName`, `PassengerEmail`, `FlightNumber`, `SeatNumber`, `TicketType`, `Price`, and `MealPreference` depend only on `BookingID`, not on `Destination`. Hence partial dependencies exist.
 
 ---
 
-### 5) Convert to **3NF** — SQL and explanation
+### 4) Convert to **2NF**
 
-**Design choice:** separate user-specific attributes into a `users_3nf` table to remove transitive dependency.
+Split data into booking-level and destination-level tables.
 
 ```sql
-CREATE TABLE users_3nf (
-    UserID INT PRIMARY KEY,
-    Username VARCHAR(50),
-    UserEmail VARCHAR(100),
-    UserPlan VARCHAR(20),
-    PlanPrice DECIMAL(10,2)
+CREATE TABLE flight_bookings_2nf (
+    BookingID INT PRIMARY KEY,
+    PassengerName VARCHAR(50),
+    PassengerEmail VARCHAR(100),
+    FlightNumber VARCHAR(20),
+    SeatNumber VARCHAR(10),
+    TicketType VARCHAR(20),
+    Price DECIMAL(10,2),
+    MealPreference VARCHAR(50)
 );
 
-INSERT INTO users_3nf VALUES
-(1, 'alice_wonder', 'alice@email.com', 'Premium', 9.99),
-(2, 'bob_builder', 'bob@email.com', 'Free', 0.00);
+INSERT INTO flight_bookings_2nf VALUES
+(1, 'Alice Johnson', 'alice@email.com', 'AI202', '12A', 'Economy', 320.00, 'Vegetarian'),
+(2, 'Bob Smith', 'bob@email.com', 'AI305', '15B', 'Business', 980.00, 'Non-Veg'),
+(3, 'Alice Johnson', 'alice@email.com', 'AI408', '9C', 'Economy', 250.00, 'Vegetarian');
 
-CREATE TABLE posts_3nf (
-    PostID INT PRIMARY KEY,
-    UserID INT,
-    PostContent TEXT,
-    LikeCount INT,
-    FOREIGN KEY (UserID) REFERENCES users_3nf(UserID)
+CREATE TABLE flight_destinations_2nf (
+    BookingID INT,
+    Destination VARCHAR(50),
+    FOREIGN KEY (BookingID) REFERENCES flight_bookings_2nf(BookingID)
 );
 
-INSERT INTO posts_3nf VALUES
-(1, 1, 'Beautiful sunset!', 150),
-(2, 2, 'New project completed', 45),
-(3, 1, 'Morning coffee', 89);
-
-CREATE TABLE post_tags_3nf (
-    PostID INT,
-    Tag VARCHAR(50),
-    FOREIGN KEY (PostID) REFERENCES posts_3nf(PostID)
-);
-
-INSERT INTO post_tags_3nf VALUES
-(1, 'nature'),(1, 'sunset'),(1, 'photography'),
-(2, 'work'),(2, 'project'),
-(3, 'coffee'),(3, 'morning'),(3, 'lifestyle');
+INSERT INTO flight_destinations_2nf VALUES
+(1, 'Delhi'),(1, 'Paris'),(1, 'London'),
+(2, 'New York'),(2, 'Chicago'),
+(3, 'Mumbai'),(3, 'Dubai');
 ```
 
-**Why this is 3NF:** `users_3nf` holds user attributes that depend only on `UserID`. `posts_3nf` holds attributes that depend only on `PostID` and references user by `UserID`. No non-key attribute depends on another non-key attribute.
+Now all non-key attributes depend on the whole key in each table — partial dependencies removed.
 
 ---
 
-### 6) Two sample queries (on 3NF schema)
+### 5) Convert to **3NF**
 
-**a) Find all tags for `PostID = 1`:**
+Passenger information (`PassengerName`, `PassengerEmail`) is repeated — transitive dependency. Split it into a separate table.
 
 ```sql
-SELECT Tag FROM post_tags_3nf WHERE PostID = 1;
+CREATE TABLE passengers_3nf (
+    PassengerID INT PRIMARY KEY,
+    PassengerName VARCHAR(50),
+    PassengerEmail VARCHAR(100)
+);
+
+INSERT INTO passengers_3nf VALUES
+(1, 'Alice Johnson', 'alice@email.com'),
+(2, 'Bob Smith', 'bob@email.com');
+
+CREATE TABLE flight_bookings_3nf (
+    BookingID INT PRIMARY KEY,
+    PassengerID INT,
+    FlightNumber VARCHAR(20),
+    SeatNumber VARCHAR(10),
+    TicketType VARCHAR(20),
+    Price DECIMAL(10,2),
+    MealPreference VARCHAR(50),
+    FOREIGN KEY (PassengerID) REFERENCES passengers_3nf(PassengerID)
+);
+
+INSERT INTO flight_bookings_3nf VALUES
+(1, 1, 'AI202', '12A', 'Economy', 320.00, 'Vegetarian'),
+(2, 2, 'AI305', '15B', 'Business', 980.00, 'Non-Veg'),
+(3, 1, 'AI408', '9C', 'Economy', 250.00, 'Vegetarian');
+
+CREATE TABLE flight_destinations_3nf (
+    BookingID INT,
+    Destination VARCHAR(50),
+    FOREIGN KEY (BookingID) REFERENCES flight_bookings_3nf(BookingID)
+);
+
+INSERT INTO flight_destinations_3nf VALUES
+(1, 'Delhi'),(1, 'Paris'),(1, 'London'),
+(2, 'New York'),(2, 'Chicago'),
+(3, 'Mumbai'),(3, 'Dubai');
 ```
 
-**b) Find the plan name and price for the user who wrote `PostID = 3`:**
+**Why this is 3NF:** each non-key attribute depends only on its table’s primary key, and there are no transitive dependencies.
+
+---
+
+### 6) Sample queries
+
+**a) Find all destinations for BookingID = 1:**
 
 ```sql
-SELECT u.UserPlan, u.PlanPrice
-FROM posts_3nf p
-JOIN users_3nf u ON p.UserID = u.UserID
-WHERE p.PostID = 3;
+SELECT Destination FROM flight_destinations_3nf WHERE BookingID = 1;
+```
+
+**b) Find ticket type and price for the passenger who has seat 9C:**
+
+```sql
+SELECT TicketType, Price
+FROM flight_bookings_3nf
+WHERE SeatNumber = '9C';
 ```
 
 ---
 
-## Grading rubric (suggested)
+### Grading rubric (suggested)
 
-* Task 1 (explain 1NF violation): 5 points
-* Task 2 (1NF SQL correct and atomic tags): 20 points
-* Task 3 (identify PK and partial dependency): 10 points
-* Task 4 (2NF decomposition correct + SQL): 25 points
-* Task 5 (3NF decomposition correct + SQL): 25 points
-* Task 6 (sample queries correct): 15 points
+* 1NF violation explanation: 5 points
+* 1NF SQL correct: 20 points
+* PK & partial dependency identified: 10 points
+* 2NF decomposition: 25 points
+* 3NF decomposition: 25 points
+* Queries: 15 points
 
-**Total:** 100 points
-
----
-
-## Extra challenge (optional, +bonus marks)
-
-1. Show a BCNF decomposition and explain if BCNF gives any change for this dataset.
-2. Add indexes to speed up tag queries and explain which columns to index and why.
-3. Write a query to list users and their number of posts (use `GROUP BY`).
+**Total: 100 points**
 
 ---
 
-## Quick instructor notes
+### Optional challenges
 
-* Encourage students to write short explanations for each decomposition step — reasoning is as important as SQL accuracy.
-* If students use `UserEmail` as a candidate key instead of `UserID`, accept it but ask them to justify uniqueness.
-* For larger assignments, ask students to implement the schema in a real RDBMS and run the sample queries to validate results.
+* Extend the schema to 4NF or BCNF.
+* Add a `Flights` table with origin, departure time, and arrival time.
+* Write a query listing each passenger and the total cost of their bookings.
 
 ---
 
